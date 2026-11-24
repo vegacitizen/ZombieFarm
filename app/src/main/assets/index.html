@@ -892,6 +892,7 @@ const PRED = {   // 좀비 종류(예전 코드와 맞춰 이름은 PRED). brk: 
   runner: { n: '달리는 좀비', e: '🏃', hp: 1, atk: 4, speed: 125, reward: 40, fear: 1, brk: 18, sz: .95, d: '주인공만큼 빨라요. 약하니 다가오기 전에 먼저 때리세요.', sp: { r: 20, v: 'roar', cry: '캬악', p: 1.5 } },
   breaker: { n: '부수는 좀비', e: '🔨', hp: 4, atk: 8, speed: 52, reward: 80, fear: 1, brk: 3, sz: 1.12, d: '나무 울타리와 나무 방어벽을 금방 부숴요. 돌담과 철벽으로 막거나 먼저 쓰러뜨리세요.', sp: { r: 24, v: 'roar', cry: '쿠어', p: .8 } },
   jumper: { n: '뛰어넘는 좀비', e: '🤸', hp: 2, atk: 6, speed: 100, reward: 90, fear: 1, brk: 14, sz: 1, d: '낮은 울타리 · 중간 울타리 · 나무 방어벽을 뛰어넘어요. 높은 울타리와 돌담은 넘지 못해요.', sp: { r: 20, v: 'roar', cry: '키익', p: 1.7 } },
+  bloater: { n: '뚱보 좀비', e: '🤢', hp: 7, atk: 9, speed: 36, reward: 120, fear: 1, brk: 7, sz: 1.3, d: '느리고 뚱뚱해요. 쓰러지면 펑 터져서 둘레의 좀비와 사람이 함께 다쳐요. 멀리서 쓰러뜨리거나 좀비 떼 한가운데서 터뜨리세요.', sp: { r: 30, v: 'roar', cry: '꾸르륵', p: .7 } },
   brute: { n: '덩치 좀비', e: '💪', hp: 14, atk: 16, speed: 40, reward: 300, fear: .3, brk: 2, sz: 1.7, d: '크고 튼튼하고 아프게 때려요. 무엇이든 금방 부수고, 횃불쯤은 겁내지 않아요.', sp: { r: 36, v: 'roar', cry: '크어어', p: .55 } },
   boss: { n: '좀비 대장', e: '👑', hp: 45, atk: 28, speed: 50, reward: 1500, fear: 0, brk: 1.2, sz: 2.3, d: '닷새마다 마지막 웨이브에 와요. 주인공은 본체만체 집으로 곧장 가서 문을 부숴요. 불도 무서워하지 않아요.', sp: { r: 48, v: 'roar', cry: '우어어어', p: .4 } }
 };
@@ -1151,7 +1152,7 @@ const TOOLS = {
   hose: { n: '물호스', e: '🚿', act: '물뿌리기', d: '누르고 있으면 물을 뿌려 가축을 씻기고 물통을 채우고 작물에 물을 줘요' },
   fork: { n: '쇠스랑', e: '🔱', act: '짚 잡기', d: '' },
   net: { n: '그물', e: '🕸️', act: '그물 던지기', d: '호수에서 한 번에 여러 마리를 잡아요. 물고기 떼 위에서 던지면 더 많이 잡혀요' },
-  shovel: { n: '삽', e: '🕳️', act: '삽질하기', d: '자갈을 치워 개간하고, 땅을 파요. 다섯 번 파면 지하수가 솟아요' }, pick: { n: '곡괭이', e: '⛏️', act: '내리치기', d: '바위를 깨요. 큰 바위일수록 여러 번 쳐야 하고 좋은 것이 나와요' }, rod: { n: '낚싯대', e: '🎣', act: '낚시하기', d: '물가에서 물고기를 낚아요' },
+  shovel: { n: '삽', e: '🕳️', act: '삽질하기', d: '자갈을 치워 개간하고, 땅을 파요. 두 번 넘게 판 구덩이에는 좀비가 빠져 죽고, 다섯 번 파면 지하수가 솟아 좀비가 건너지 못해요' }, pick: { n: '곡괭이', e: '⛏️', act: '내리치기', d: '바위를 깨요. 큰 바위일수록 여러 번 쳐야 하고 좋은 것이 나와요' }, rod: { n: '낚싯대', e: '🎣', act: '낚시하기', d: '물가에서 물고기를 낚아요' },
   trap1: { n: '올가미', e: '🪤', act: '덫 놓기', d: '작은 야생 동물을 산 채로 잡아요' }, trap2: { n: '상자 덫', e: '📦', act: '덫 놓기', d: '중간 크기 야생 동물까지 잡아요' }, trap3: { n: '대형 포획 틀', e: '🥅', act: '덫 놓기', d: '희귀한 큰 야생 동물도 잡아요' },
   scratch: { n: '긁개', e: '🧹', act: '긁어 주기', d: '가축 옆에서 누르면 시원하게 긁어 줘요. 만족도와 교감이 오르고 한동안 더 빨리 자라요' },
   treat: { n: '간식', e: '🍪', act: '간식 주기', d: '가축에게 주면 교감이 많이 오르고 한동안 졸졸 따라와요' },
@@ -3252,6 +3253,9 @@ function setNightLen() { NIGHT_LEN = nightLen(day); CYCLE = DAY_LEN + NIGHT_LEN;
 const zScale = () => ({ hp: 1 + (day - 1) * .07, sp: Math.min(1.45, 1 + (day - 1) * .02), atk: 1 + (day - 1) * .035 });   // 날이 갈수록 체력 · 빠르기 · 공격력이 오른다
 const defKey = (cx, cy) => cx + ',' + cy, defAt = (x, y) => defs[Math.floor(x / CELL) + ',' + Math.floor(y / CELL)], isWall = d => !!d && d.k[0] === 'w';
 const penStr = P => [0, 20, 30, 45, 150][P.tier || 1] * (1 + .5 * (P.fort || 0)) * (P.stable ? 3 : 1);
+const zWater = (x, y) => { if (inWater(x, y)) return true; const c = pitAt(x, y); return !!c && c.d >= 5; };   // 호수 · 저수지와 지하수가 솟은 구덩이는 건너지 못한다
+const PIT_NEED = { brute: 3, bloater: 3 }, pitTime = c => 8 - 1.5 * c.d;   // 마른 구덩이: 깊이 2부터 빠지고(큰 좀비는 3부터) 깊을수록 빨리 죽는다
+let zStop = 0;   // 타격 순간의 짧은 멈춤
 const zPenAt = (x, y) => PENS.find(p => p.own && !p.hole && x > p.x && x < p.x + p.w && y > p.y && y < p.y + p.h);
 function resetZ() { plHp = PL_HP; meleeLv = 0; armorLv = 0; doorLv = 0; doorHp = DOORS[0].hp; fam = [1, 1, 1, 1]; defs = {}; defVer++; defInv = { w1: 0, w2: 0, w3: 0, spike: 0, tower: 0 }; moloInv = 0; foods = { ration: 2 }; pantry = { egg: 0, milk: 0, fish: 0 }; zKills = 0; buffT = 0; zw = { i: 0, q: [], sT: 0, side: 0, n: 0 }; towerFx = []; zTip = {}; pl.hurtT = 0; pl.invT = 0; pl.meleeCd = 0; applyMelee(); setNightLen(); }
 function applyMelee() { TOOLS.bat.n = MELEE[meleeLv].n; TOOLS.bat.e = MELEE[meleeLv].e; }
@@ -3267,15 +3271,14 @@ function snapMorning() { try { localStorage.setItem(Z_SNAP, JSON.stringify({ s: 
 
 /* ---------- 길 찾기: 문에서 퍼지는 비용 지도 ---------- */
 const ZN = { x0: -360, y0: -360, w: 0, h: 0, f: {}, t: 0, blk: null, bar: null, jmp: null, fire: null };
-const Z_CLS = { walker: 'n', runner: 'n', breaker: 'b', jumper: 'j', brute: 'h', boss: 'h' }, Z_DPS = { n: .7, b: 3.3, j: .7, h: 5 }, Z_FEAR = { n: 1, b: 1, j: 1, h: .3 };
+const Z_CLS = { walker: 'n', runner: 'n', bloater: 'n', breaker: 'b', jumper: 'j', brute: 'h', boss: 'h' }, Z_DPS = { n: .7, b: 3.3, j: .7, h: 5 }, Z_FEAR = { n: 1, b: 1, j: 1, h: .3 };
 const znI = (x, y) => { const cx = Math.floor((x - ZN.x0) / CELL), cy = Math.floor((y - ZN.y0) / CELL); return cx < 0 || cy < 0 || cx >= ZN.w || cy >= ZN.h ? -1 : cy * ZN.w + cx; };
 const znX = i => ZN.x0 + (i % ZN.w + .5) * CELL, znY = i => ZN.y0 + (Math.floor(i / ZN.w) + .5) * CELL;
 function znBuild() {
   const w = ZN.w = Math.ceil((WORLD.w + 720) / CELL), h = ZN.h = Math.ceil((WORLD.h + 720) / CELL), n = w * h, blk = ZN.blk = new Uint8Array(n), bar = ZN.bar = new Float32Array(n), jmp = ZN.jmp = new Uint8Array(n), fire = ZN.fire = new Uint8Array(n), door = znI(DOOR.x, DOOR.y);
   const pens = PENS.filter(p => p.own && !p.hole), fl = fires.filter(f => FIRE_SCARE[f.k]);
   for (let i = 0; i < n; i++) { const x = znX(i), y = znY(i);
-    if (i !== door && (inWater(x, y) || (Math.abs(x - BARN.x) < 100 && y > BARN.y - 90 && y < BARN.y + 70))) { blk[i] = 1; continue; }
-    const c = pitAt(x, y); if (c && c.d >= 4) blk[i] = 2;
+    if (i !== door && (zWater(x, y) || (Math.abs(x - BARN.x) < 100 && y > BARN.y - 90 && y < BARN.y + 70))) { blk[i] = 1; continue; }
     const d = defAt(x, y); if (isWall(d)) { bar[i] = d.hp; jmp[i] = ZDEF[d.k].jump ? 1 : 0; }
     for (const p of pens) { if (x < p.x - 31 || x > p.x + p.w + 31 || y < p.y - 31 || y > p.y + p.h + 31) continue; if (x > p.x + 31 && x < p.x + p.w - 31 && y > p.y + 31 && y < p.y + p.h - 31) continue; const s = (p.zhp == null ? penStr(p) : p.zhp) + (p.elec ? 200 : 0); if (s > bar[i]) { bar[i] = s; jmp[i] = p.tier <= 2 && !p.elec ? 1 : 0; } }
     for (const f of fl) if (Math.hypot(f.x - x, f.y - y) < FIRE_SCARE[f.k] * .55) { fire[i] = 1; break; } }
@@ -3286,7 +3289,7 @@ function znField(c, door) {   // 다익스트라: 문에서 각 칸까지의 '�
   const push = (i, v) => { heap.push([v, i]); let k = heap.length - 1; while (k > 0) { const p = (k - 1) >> 1; if (heap[p][0] <= heap[k][0]) break; const t = heap[p]; heap[p] = heap[k]; heap[k] = t; k = p; } };
   const pop = () => { const top = heap[0], last = heap.pop(); if (heap.length) { heap[0] = last; let k = 0; for (;;) { const l = k * 2 + 1, r = l + 1; let m = k; if (l < heap.length && heap[l][0] < heap[m][0]) m = l; if (r < heap.length && heap[r][0] < heap[m][0]) m = r; if (m === k) break; const t = heap[m]; heap[m] = heap[k]; heap[k] = t; k = m; } } return top; };
   if (door < 0) return F; F[door] = 0; push(door, 0);
-  const cost = i => 1 + (blk[i] === 2 ? 40 : 0) + (bar[i] ? (ZN.jmp[i] && c === 'j' ? 2 : bar[i] / Z_DPS[c] / 1.3) : 0) + (ZN.fire[i] ? 30 * Z_FEAR[c] : 0);
+  const cost = i => 1 + (bar[i] ? (ZN.jmp[i] && c === 'j' ? 2 : bar[i] / Z_DPS[c] / 1.3) : 0) + (ZN.fire[i] ? 30 * Z_FEAR[c] : 0);
   while (heap.length) { const [v, i] = pop(); if (v > F[i]) continue; const cx = i % w, cy = (i - cx) / w, own = cost(i);   // 이 칸을 지나 문 쪽으로 가는 값
     for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { if (!dx && !dy) continue; const x = cx + dx, y = cy + dy; if (x < 0 || y < 0 || x >= w || y >= ZN.h) continue; const j = y * w + x; if (blk[j] === 1) continue;
       if (dx && dy) { const a = cy * w + x, b = y * w + cx; if (blk[a] || blk[b] || bar[a] || bar[b] || bar[i] || bar[j]) continue; }   // 모서리를 비껴 지나가지 않는다
@@ -3303,7 +3306,7 @@ function znNext(q) {   // 비용이 가장 낮은 이웃 칸의 가운데
 const SIDE_N = ['북쪽', '동쪽', '남쪽', '서쪽'];
 function waveMix(i, W) {   // 이번 웨이브에 올 좀비들. 날이 갈수록 수가 늘고 센 종류가 섞인다
   const d = day, n = Math.min(30, Math.round((2.2 + d * 1.3) * (.8 + .4 * i / W))), wt = [['walker', 10]];
-  if (d >= 3) wt.push(['runner', Math.min(6, d - 1)]); if (d >= 4) wt.push(['breaker', Math.min(5, d - 2)]); if (d >= 6) wt.push(['jumper', Math.min(5, d - 4)]); if (d >= 8) wt.push(['brute', Math.min(3, (d - 6) / 2)]);
+  if (d >= 3) wt.push(['runner', Math.min(6, d - 1)]); if (d >= 4) wt.push(['breaker', Math.min(5, d - 2)]); if (d >= 5) wt.push(['bloater', Math.min(3, (d - 3) / 2)]); if (d >= 6) wt.push(['jumper', Math.min(5, d - 4)]); if (d >= 8) wt.push(['brute', Math.min(3, (d - 6) / 2)]);
   const tot = wt.reduce((t, q) => t + q[1], 0), l = [];
   for (let k = 0; k < n; k++) { let r = Math.random() * tot; for (const q of wt) { r -= q[1]; if (r <= 0) { l.push(q[0]); break; } } }
   if (d === 2 && i === W - 1) l[0] = 'runner'; if (i === W - 1 && d % 5 === 0) for (let k = 0; k < Math.max(1, Math.floor(d / 10)); k++) l.push('boss');   // 닷새마다 마지막 웨이브에 대장이 온다
@@ -3324,7 +3327,7 @@ function spawnPred(kind) {
   const D = PRED[kind] || PRED.walker, S = zScale(), F = ZN.f[Z_CLS[kind] || 'n']; let x = 0, y = 0;
   for (let t = 0; t < 14; t++) { const side = t < 5 && Math.random() < .75 ? zw.side : Math.floor(R(0, 4));   // 대부분 한쪽에서 몰려온다. 물 위나 길이 없는 곳에서는 나오지 않는다
     x = side === 3 ? -50 : side === 1 ? WORLD.w + 50 : R(40, WORLD.w - 40); y = side === 0 ? -50 : side === 2 ? WORLD.h + 50 : R(40, WORLD.h - 40);
-    const i = znI(x, y); if (!inWater(x, y) && (!F || i < 0 || F[i] < Infinity)) break; }
+    const i = znI(x, y); if (!zWater(x, y) && (!F || i < 0 || F[i] < Infinity)) break; }
   const q = { kind, D, sp: D.sp, x, y, hp: Math.ceil(D.hp * S.hp), speed: D.speed * S.sp * R(.88, 1.12), atk: D.atk * S.atk, dead: 0, flee: false, moving: true, seed: R(0, 100), stun: 0, retreatT: 0, rx: 0, ry: 0, cd: R(0, .6), atkT: 0, aggro: false, noAggro: 0, stuck: 0, jumpT: 0, slowT: 0, burnT: 0, breakT: 0, look: Math.floor(R(0, 10)) };
   q.max = q.hp; preds.push(q); if (Math.random() < .35) zGroan(q); return q;
 }
@@ -3346,20 +3349,25 @@ function startDay() {
   if (!animals.length && money < KINDS.chicken.buy) { addAnimal('chicken', 0, true); addAnimal('chicken', 0, true); showToast('이웃이 닭 두 마리를 빌려줬어요. 다시 시작해 봐요!', 5); }
   newOrder(); morningQ = []; if (GIFTS[day] && giftDay < day) morningQ.push(showGift); if (day % 4 === 0 && festReady()) morningQ.push(showFestival); if (day % 3 === 0 && raceHorse()) morningQ.push(showRace); if (day % 3 === 1 && climbGoat()) morningQ.push(showClimb); if (day % 5 === 0) morningQ.push(showFair); if (LETTERS[day] && letterSeen < day) morningQ.push(() => showLetter(day)); if (Z_NEWS[day]) morningQ.push(() => showZNews(day)); runMorning();
 }
-const Z_NEWS = { 3: 'runner', 4: 'breaker', 6: 'jumper', 8: 'brute', 10: 'boss' };
+const Z_NEWS = { 3: 'runner', 4: 'breaker', 5: 'bloater', 6: 'jumper', 8: 'brute', 10: 'boss' };
 function showZNews(d) {   // 새 좀비가 나타나는 날 아침에 미리 알려 준다
   const D = PRED[Z_NEWS[d]]; state = 'menu'; showOv('<h2>📻 라디오 속보</h2><p>오늘 밤부터 <b>' + D.e + ' ' + D.n + '</b>가 나타난다는 소식이에요.</p><p class="sub">' + D.d + '</p><p class="sub">낮 동안 가축을 돌봐 돈을 벌고, 상점의 🛡️ 방어 탭에서 무기와 방어 시설을 준비하세요.</p><button class="btn" id="go">좋아요</button>'); $('go').onclick = () => { state = 'play'; hideOv(); runMorning(); };
 }
 
 /* ---------- 좀비 한 마리 ---------- */
-function zHurt(q, dmg, how) {
-  if (q.dead || q.gone) return; q.hp -= dmg; q.hitT = .18; burst(q.x, q.y, 'dust', 3); if (how === 'melee') { const dx = q.x - pl.x, dy = q.y - pl.y, d = Math.hypot(dx, dy) || 1; q.rx = dx / d; q.ry = dy / d; q.retreatT = q.kind === 'brute' || q.kind === 'boss' ? 0 : .16; }
-  if (q.hp <= 0) killPred(q, how); else if (how !== 'burn' && Math.random() < .3) noise(.06, 500, 1.5, .25, 0, 'lowpass');
+function zHurt(q, dmg, how) {   // 맞았다: 번쩍이고 움찔하고 밀려나고, 피가 튀고 숫자가 뜬다
+  if (q.dead || q.gone) return; if (q.hpLag == null || q.hpLag < q.hp) q.hpLag = q.hp; q.hp -= dmg; q.hitT = .24; q.stagT = q.kind === 'boss' ? 0 : .28; const big = q.kind === 'brute' || q.kind === 'boss';
+  if (how === 'melee' || how === 'gun' || how === 'bite') { const dx = q.x - pl.x, dy = q.y - pl.y, d = Math.hypot(dx, dy) || 1; q.hx = dx / d; q.hy = dy / d; }
+  if (q.hx != null && !q.pit && how !== 'burn' && how !== 'trap') { const dist = clamp((how === 'melee' ? 10 : how === 'boom' ? 26 : 5) + dmg * 9, 8, 80) / Math.pow(q.D.sz, 1.6); q.kbT = .16; q.kbV = dist / .16; q.kx = q.hx; q.ky = q.hy; }   // 센 공격일수록, 가벼운 좀비일수록 멀리 밀린다
+  chips(q.x, q.y, 60 * q.D.sz, q.kind === 'bloater' ? '#7fae3a' : '#8a1f24', Math.min(12, 3 + dmg * 2), 1); burst(q.x, q.y, 'dust', 2);
+  if (how === 'melee') { zStop = Math.max(zStop, .055); tone(170, 60, .09, 'square', .32); noise(.07, 900, 1.2, .35); } else if (how === 'gun') { zStop = Math.max(zStop, .025); noise(.05, 1400, 2, .3); } else if (how !== 'burn' && Math.random() < .5) noise(.06, 500, 1.5, .25, 0, 'lowpass');
+  if (how !== 'burn' || !(q.numT > gt)) { q.numT = gt + .5; says.push({ x: q.x + R(-14, 14), y: q.y, h: 110 * q.D.sz, text: '-' + dmg, col: how === 'burn' ? '#ffb347' : dmg >= 3 ? '#ffe14a' : '#ffffff', life: .7, big: dmg >= 3 }); }
+  if (q.hp <= 0) killPred(q, how);
 }
 const hitPred = (q, dmg, why) => zHurt(q, dmg, 'bite');   // 개가 물었다
 function scarePred(q, why, quiet) { if (q.dead || q.kind === 'boss') return; q.stun = Math.max(q.stun, .7); if (!quiet && why) say(q, why, '#fff'); }   // 큰 소리나 불빛에 잠깐 주춤한다
 function killPred(q, how) {
-  if (q.dead) return; q.dead = 1.4; q.hp = 0; const rw = Math.round(q.D.reward * ((GUNS[gunLv] || {}).bonus && how === 'gun' ? GUNS[gunLv].bonus : 1) / 10) * 10; money += rw; kills++; zKills++; killsTonight++; stats.repelled++; nmP.repel++; if (how === 'melee') nmP.melee++; if (how === 'burn') nmP.camp++; dexAdd('p:' + q.kind); addXp(2 + (q.kind === 'boss' ? 30 : q.kind === 'brute' ? 8 : 0));
+  if (q.dead) return; q.dead = 1.4; q.hp = 0; chips(q.x, q.y, 70 * q.D.sz, '#8a1f24', 10, 1.3); if (q.kind === 'bloater') zBoom(q); const rw = Math.round(q.D.reward * ((GUNS[gunLv] || {}).bonus && how === 'gun' ? GUNS[gunLv].bonus : 1) / 10) * 10; money += rw; kills++; zKills++; killsTonight++; stats.repelled++; nmP.repel++; if (how === 'melee') nmP.melee++; if (how === 'burn') nmP.camp++; dexAdd('p:' + q.kind); addXp(2 + (q.kind === 'boss' ? 30 : q.kind === 'brute' ? 8 : 0));
   say(q, '💰 +' + rw.toLocaleString(), '#ffd27a'); tone(180, 70, .18, 'square', .18); noise(.12, 300, 1, .3, 0, 'lowpass');
   if (q.kind === 'boss' || q.kind === 'brute') { showToast('💀 ' + q.D.n + '를 쓰러뜨렸어요! +' + rw.toLocaleString() + '원', 3); SFX.praise(); burst(q.x, q.y, 'spark', 12); }
 }
@@ -3370,9 +3378,18 @@ function gunRay() {   // 지금 쏘면 맞는 좀비 (조준선 위에서 가장
 }
 function zBarrier(q, hp, dt) { q.breakT = .3; q.moving = false; if (Math.random() < dt * 4) { noise(.07, 600, 2, .25, 0, 'lowpass'); burst(q.x, q.y, 'dust', 1); } return hp - 10 / q.D.brk * dt; }   // 막힌 것을 두드린다
 function zJump(q, dx, dy) { const d = Math.hypot(dx, dy) || 1; q.jumpT = .6; q.jdx = dx / d; q.jdy = dy / d; tone(300, 520, .12, 'triangle', .15); }
-function zFallPit(q, c) {   // 길이 도랑뿐이면 몸을 던져 메운다: 두 마리가 빠지면 한 칸이 메워진다
-  c.zf = (c.zf || 0) + 1; q.dead = .8; q.sunk = true; q.hp = 0; burst(q.x, q.y, 'bubble', 6); noise(.2, 400, .8, .4, 0, 'lowpass');
-  if (c.zf >= 2) { landMd(c); delete pits[c.cx + ',' + c.cy]; bodiesC = null; ZN.t = 0; if (!zTip.pit) { zTip.pit = 1; showToast('🧟 좀비들이 몸으로 도랑을 메우고 건너와요! 도랑은 시간을 벌어 줄 뿐이에요', 5); } }
+function zPitCheck(q) {   // 마른 구덩이에 발을 들였다: 깊으면 빠져서 갇히고, 얕으면 걸려 비틀거린다
+  const c = pitAt(q.x, q.y); if (!c || c.d >= 5) { q.pitSkip = null; return false; } if (c === q.pitSkip) return false; q.pitSkip = c;
+  if (q.kind === 'boss' || q.jumpT > 0) return false; const occ = c.zl = (c.zl || []).filter(o => !o.dead && !o.gone && o.pit === c); if (occ.length >= Math.max(1, c.d - 1)) return false;   // 깊이 2는 한 마리, 3은 두 마리, 4는 세 마리까지 빠진다. 꽉 차면 밟고 지나간다
+  if (c.d < (PIT_NEED[q.kind] || 2)) { q.stun = Math.max(q.stun, .7); q.hitT = .2; burst(q.x, q.y, 'dust', 4); return true; }
+  q.pit = c; q.pitT = 0; q.x = c.cx * CELL + CELL / 2 + [0, -15, 15][occ.length % 3]; q.y = c.cy * CELL + CELL / 2 + [0, 10, -10][occ.length % 3]; occ.push(q); q.aggro = false; q.atkT = 0; burst(q.x, q.y, 'dust', 10); noise(.25, 260, .8, .5, 0, 'lowpass'); tone(240, 90, .25, 'triangle', .2); say(q, '🕳️ 빠졌다!', '#ffd27a');
+  if (!zTip.pit) { zTip.pit = 1; showToast('🕳️ 좀비가 구덩이에 빠졌어요! 그대로 두면 ' + Math.round(pitTime(c)) + '초 뒤에 죽어요. 깊을수록 여러 마리가 빠지고 빨리 죽어요. 두 마리를 잡을 때마다 한 단계씩 메워지니 낮에 다시 파 두세요', 5); }
+  return true;
+}
+function zBoom(q) {   // 뚱보 좀비가 터진다
+  burst(q.x, q.y, 'smoke', 12); chips(q.x, q.y, 50, '#7fae3a', 22, 1.6); noise(.5, 160, .7, 1, 0, 'lowpass'); tone(120, 40, .4, 'sawtooth', .4); shake = Math.max(shake, .45); say(q, '💥 펑!', '#b8f06a', 1);
+  for (const o of preds.slice()) if (o !== q && !o.dead && Math.hypot(o.x - q.x, o.y - q.y) < 125) { o.hx = (o.x - q.x) / (Math.hypot(o.x - q.x, o.y - q.y) || 1); o.hy = (o.y - q.y) / (Math.hypot(o.x - q.x, o.y - q.y) || 1); zHurt(o, 3, 'boom'); }
+  if (Math.hypot(pl.x - q.x, pl.y - q.y) < 120 && !fly) hurtPlayer({ atk: q.atk * 1.3, D: q.D });
 }
 function hurtPlayer(q) {
   if (pl.invT > 0 || state !== 'play' || inf) return; const dmg = q.atk * (1 - ARMOR[armorLv].cut) * (isCab() ? .5 : 1); plHp -= dmg; pl.invT = .45; pl.hurtT = .35; hurtFx = .5; shake = Math.max(shake, .3);
@@ -3385,21 +3402,27 @@ function familyLost(q) {
   if (!famN()) gameOver('가족을 모두 잃었어요', '집을 지키지 못했어요.'); else saveGame();
 }
 function updatePred(q, dt) {
-  if (q.dead) { q.dead -= dt; q.moving = false; if (q.dead <= 0) q.gone = true; return; }
-  const D = q.D, r = q.sp.r; q.moving = true; if (q.hitT > 0) q.hitT -= dt; if (q.cd > 0) q.cd -= dt; if (q.noAggro > 0) q.noAggro -= dt; if (q.slowT > 0) q.slowT -= dt; if (q.breakT > 0) q.breakT -= dt;
+  if (q.dead) { if (q.dead > 1.05 && q.hx != null && !q.pit && !q.sun) { const nx = q.x + q.hx * 150 * dt, ny = q.y + q.hy * 150 * dt; if (zOk(q, nx, ny)) { q.x = nx; q.y = ny; } } q.dead -= dt; q.moving = false; if (q.dead <= 0) q.gone = true; return; }   // 쓰러지며 맞은 쪽으로 밀려난다
+  const D = q.D, r = q.sp.r; q.moving = true; if (q.hitT > 0) q.hitT -= dt; else if (q.hpLag > q.hp) q.hpLag = Math.max(q.hp, q.hpLag - q.max * dt * 1.2); if (q.stagT > 0) q.stagT -= dt;
+  if (q.pit) {   // 구덩이에 갇혔다: 허우적대다가 죽는다. 구덩이가 메워지거나 물이 차면 풀려난다
+    const c = q.pit; q.moving = false; if (pits[c.cx + ',' + c.cy] !== c || c.d >= 5 || c.d < 2) { q.pit = null; q.pitSkip = c; return; }
+    q.pitT += dt; if (q.burnT > 0) q.burnT -= dt; if (Math.random() < dt * 3) burst(q.x, q.y, 'dust', 1);
+    if (q.pitT >= pitTime(c)) { killPred(q, 'pit'); c.zn = (c.zn || 0) + 1; if (c.zn >= 2) { c.zn = 0; fillPit(c); ZN.t = 0; } } return; } if (q.cd > 0) q.cd -= dt; if (q.noAggro > 0) q.noAggro -= dt; if (q.slowT > 0) q.slowT -= dt; if (q.breakT > 0) q.breakT -= dt;
   if (q.burnT > 0) { q.burnT -= dt; q.burnAcc = (q.burnAcc || 0) + dt; if (q.burnAcc >= 1) { q.burnAcc = 0; zHurt(q, 1, 'burn'); if (q.dead) return; } if (Math.random() < dt * 5) burst(q.x, q.y, 'spark', 1); }
+  if (q.kbT > 0) { const k = q.kbT / .16, v = q.kbV * (.4 + 1.2 * k) * dt, nx = q.x + q.kx * v, ny = q.y + q.ky * v; q.kbT -= dt; q.moving = false; if (zOk(q, nx, ny)) { q.x = nx; q.y = ny; } zPitCheck(q); return; }   // 맞고 뒤로 밀리는 중(밀려서 구덩이에 빠지기도 한다)
   if (q.stun > 0) { q.stun -= dt; q.moving = false; return; }
   if (q.jumpT > 0) { q.jumpT -= dt; q.x += q.jdx * 230 * dt; q.y += q.jdy * 230 * dt; return; }
-  if (q.retreatT > 0) { q.retreatT -= dt; const nx = q.x + q.rx * 170 * dt, ny = q.y + q.ry * 170 * dt; if (!inWater(nx, ny) && !isWall(defAt(nx, ny)) && zPenAt(nx, ny) === zPenAt(q.x, q.y)) { q.x = nx; q.y = ny; } return; }
+  if (q.retreatT > 0) { q.retreatT -= dt; const nx = q.x + q.rx * 170 * dt, ny = q.y + q.ry * 170 * dt; if (!zWater(nx, ny) && !isWall(defAt(nx, ny)) && zPenAt(nx, ny) === zPenAt(q.x, q.y)) { q.x = nx; q.y = ny; } return; }
   const fear = D.fear;
   if (fear > 0) {   // 불: 다가서지 못하고 물러난다. 바짝 붙으면 불이 옮겨붙는다
     for (const f of fires) { const R0 = (FIRE_SCARE[f.k] || 0) * .55 * fear; if (!R0) continue; const dx = q.x - f.x, dy = q.y - f.y, d = Math.hypot(dx, dy) || 1; if (d < R0) { if (!q.fireSeen) { q.fireSeen = 1; if (f.k === 'pile' || f.k === 'hay') nmP.straw++; if (Math.random() < .3) say(q, '🔥 으어…', '#ffb347'); } if (d < 46) q.burnT = Math.max(q.burnT, 3); q.rx = dx / d; q.ry = dy / d; q.retreatT = .35; q.noAggro = 1.5; return; } }
     if (pl.tool === 'torch' && pl.swingT > 0 && !q.torched && Math.hypot(q.x - pl.x, q.y - pl.y) < 135 * fear) { q.torched = gt + 1.6; const dx = q.x - pl.x, dy = q.y - pl.y, d = Math.hypot(dx, dy) || 1; q.rx = dx / d; q.ry = dy / d; q.retreatT = .7; return; } if (q.torched && q.torched < gt) q.torched = 0; }
   { const d = defAt(q.x, q.y); if (d && d.k === 'spike' && !(q.spikeT > gt)) { q.spikeT = gt + 1.2; q.slowT = 2; zHurt(q, 3, 'trap'); d.hp--; noise(.08, 1800, 3, .3); if (d.hp <= 0) { delete defs[defKey(d.cx, d.cy)]; say({ x: q.x, y: q.y }, '가시 덫이 망가졌어요', '#6b4a3a'); } defVer++; if (q.dead) return; } }
+  if (zPitCheck(q)) return;
   // 누구를 노릴까: 가까이 있는 주인공, 아니면 집 문
   const pdx = pl.x - q.x, pdy = pl.y - q.y, pd = Math.hypot(pdx, pdy), canP = !fly && !boat.riding && q.kind !== 'boss' && q.noAggro <= 0;
   q.aggro = canP && pd < (q.aggro ? 380 : 250);
-  const sp = q.speed * (q.slowT > 0 ? .45 : 1) * (q.hp <= q.max * .3 && q.kind !== 'brute' && q.kind !== 'boss' ? .6 : 1);
+  const sp = q.speed * (q.slowT > 0 ? .45 : 1) * (q.stagT > 0 ? .3 : 1) * (q.hp <= q.max * .3 && q.kind !== 'brute' && q.kind !== 'boss' ? .6 : 1);
   let tx, ty;
   if (q.aggro) { tx = pl.x; ty = pl.y; const reach = r * .6 + 36;
     if (pd < reach) { q.moving = false; if (q.cd <= 0 && !q.atkT) q.atkT = .32; if (q.atkT > 0) { q.atkT -= dt; if (q.atkT <= 0) { q.atkT = 0; q.cd = 1.25; if (Math.hypot(pl.x - q.x, pl.y - q.y) < reach + 18) hurtPlayer(q); } } return; } q.atkT = 0; }
@@ -3422,11 +3445,11 @@ function updatePred(q, dt) {
     if (q.kind === 'jumper' && P.tier <= 2) { zJump(q, ux, uy); return; }
     if (P.zhp == null) P.zhp = penStr(P); P.zhp = zBarrier(q, P.zhp, dt); for (const a of inPen(P)) a.attackedT = Math.max(a.attackedT, 1);
     if (P.zhp <= 0) { P.zhp = undefined; makeHole(P, q.x, q.y); buildFences(); ZN.t = 0; noise(.3, 250, .8, .8, 0, 'lowpass'); shake = Math.max(shake, .3); showToast('💥 ' + D.n + '가 ' + (P.i + 1) + '번 울타리를 부쉈어요! 고치지 않으면 가축이 빠져나가요', 4); } return; }
-  if (inWater(nx, ny)) { q.stuck += dt; if (q.aggro && q.stuck > 1.5) { q.noAggro = 5; q.stuck = 0; } const sx = !inWater(q.x + ux * step, q.y), sy = !inWater(q.x, q.y + uy * step); if (sx) q.x += ux * step; else if (sy) q.y += uy * step; else q.moving = false; return; }
-  if (pitBlocks(nx, ny, r, true)) { const c = pitAt(nx, ny); if (pitBlocks(q.x, q.y, r, true)) { zFallPit(q, pitAt(q.x, q.y) || c); return; } q.stuck += dt; if (q.aggro) { if (q.stuck > 1.5) { q.noAggro = 5; q.stuck = 0; } q.moving = false; return; } if (q.stuck > .6 && c) zFallPit(q, c); return; }   // 떠밀려 이미 빠졌으면 그대로 가라앉는다
+  if (zWater(nx, ny)) { q.stuck += dt; if (q.aggro && q.stuck > 1.5) { q.noAggro = 5; q.stuck = 0; } const sx = !zWater(q.x + ux * step, q.y), sy = !zWater(q.x, q.y + uy * step); if (sx) q.x += ux * step; else if (sy) q.y += uy * step; else q.moving = false; return; }
+  if (q.kind === 'jumper') { const c = pitAt(nx + ux * 26, ny + uy * 26); if (c && c.d < 5 && c.d >= 2 && c !== pitAt(q.x, q.y)) { zJump(q, ux, uy); return; } }   // 뛰어넘는 좀비는 구덩이도 넘는다
   q.stuck = Math.max(0, q.stuck - dt); q.x = nx; q.y = ny;
 }
-const zOk = (q, x, y) => !inWater(x, y) && !pitBlocks(x, y, q.sp.r, true) && !isWall(defAt(x, y)) && zPenAt(x, y) === zPenAt(q.x, q.y);
+const zOk = (q, x, y) => !zWater(x, y) && !isWall(defAt(x, y)) && zPenAt(x, y) === zPenAt(q.x, q.y);
 function updateZombies(dt) {
   if (pl.invT > 0) pl.invT -= dt; if (pl.hurtT > 0) pl.hurtT -= dt; if (pl.meleeCd > 0) pl.meleeCd -= dt; if (hurtFx > 0) hurtFx -= dt; if (buffT > 0) buffT -= dt; if (eatCd > 0) eatCd -= dt;
   updateWaves(dt); const alive = zAlive();
@@ -3435,7 +3458,7 @@ function updateZombies(dt) {
   for (let i = 0; i < alive.length; i++) for (let j = i + 1; j < alive.length; j++) { const a = alive[i], b = alive[j], dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy), m = (a.sp.r + b.sp.r) * .55; if (d < m && d > .01 && !a.jumpT && !b.jumpT) { const k = (m - d) / d * .5 * Math.min(1, dt * 8); if (!a.atDoor && zOk(a, a.x - dx * k, a.y - dy * k)) { a.x -= dx * k; a.y -= dy * k; } if (!b.atDoor && zOk(b, b.x + dx * k, b.y + dy * k)) { b.x += dx * k; b.y += dy * k; } } }   // 서로 겹치지 않게 밀어낸다(막힌 곳으로는 밀리지 않는다)
   for (const q of preds) if (q.gone && q.md && q.md.g.parent) q.md.g.parent.remove(q.md.g); preds = preds.filter(q => !q.gone);
   if (alive.length) { zGroanT -= dt; if (zGroanT <= 0) { zGroanT = R(2.5, 6) / Math.min(3, 1 + alive.length / 8); zGroan(alive[Math.floor(Math.random() * alive.length)]); } }
-  for (const k in defs) { const d = defs[k]; if (d.k !== 'tower') continue; d.cd = (d.cd || 0) - dt; if (d.cd > 0 || !alive.length) continue; const x = d.cx * CELL + CELL / 2, y = d.cy * CELL + CELL / 2; let b = null, bd = 340; for (const q of alive) { const dd = Math.hypot(q.x - x, q.y - y); if (dd < bd) { bd = dd; b = q; } } if (!b) { d.cd = .3; continue; } d.cd = 1.4; towerFx.push({ x0: x, y0: y, x1: b.x, y1: b.y, t: .14 }); tone(900, 400, .06, 'triangle', .14); zHurt(b, 2, 'tower'); }   // 석궁탑
+  for (const k in defs) { const d = defs[k]; if (d.k !== 'tower') continue; d.cd = (d.cd || 0) - dt; if (d.cd > 0 || !alive.length) continue; const x = d.cx * CELL + CELL / 2, y = d.cy * CELL + CELL / 2; let b = null, bd = 340; for (const q of alive) { const dd = Math.hypot(q.x - x, q.y - y); if (dd < bd) { bd = dd; b = q; } } if (!b) { d.cd = .3; continue; } d.cd = 1.4; towerFx.push({ x0: x, y0: y, x1: b.x, y1: b.y, t: .14 }); tone(900, 400, .06, 'triangle', .14); b.hx = (b.x - x) / (bd || 1); b.hy = (b.y - y) / (bd || 1); zHurt(b, 2, 'tower'); }   // 석궁탑
   for (const f of towerFx) f.t -= dt; if (towerFx.length) towerFx = towerFx.filter(f => f.t > 0);
   if (!isNight() && plHp < PL_HP && !alive.length) plHp = Math.min(PL_HP, plHp + 2 * dt);   // 낮에는 체력이 천천히 돌아온다
   if (isNight() && !peace && !alive.length && !zw.q.length && zw.i >= waveCount(day) && !zw.clear) { zw.clear = true; showToast('🌙 오늘 밤의 좀비를 모두 물리쳤어요! 아침까지 숨을 돌리세요', 4); SFX.praise(); }
@@ -3450,7 +3473,7 @@ function meleeSwing() {
 }
 function throwMolo() {
   if (moloInv <= 0) { showToast('화염병이 없어요. 상점의 🛡️ 방어 탭에서 사세요'); return; } if (pl.meleeCd > 0) return; if (fires.length >= FIRE_MAX) { showToast('불이 너무 많아요'); return; }
-  pl.meleeCd = .8; pl.swingT = .3; moloInv--; const x = pl.x + pl.ax * 210, y = pl.y + pl.ay * 210; if (inWater(x, y)) { burst(x, y, 'bubble', 8); say({ x, y }, '치익… 물에 빠졌어요', '#2a7fb8'); return; }
+  pl.meleeCd = .8; pl.swingT = .3; moloInv--; const x = pl.x + pl.ax * 210, y = pl.y + pl.ay * 210; if (zWater(x, y)) { burst(x, y, 'bubble', 8); say({ x, y }, '치익… 물에 빠졌어요', '#2a7fb8'); return; }
   fires.push({ k: 'molo', o: { x, y }, x, y, t: 0, hp: 1.5, sp: 99, seed: R(0, 9) }); burst(x, y, 'spark', 16); noise(.4, 600, .8, .5, 0, 'bandpass'); tone(700, 200, .2, 'triangle', .2); ZN.t = 0;
   for (const q of preds) if (!q.dead && Math.hypot(q.x - x, q.y - y) < 80) { zHurt(q, 2, 'burn'); q.burnT = 4; }
   if (moloInv <= 0) fixTool(); saveGame();
@@ -3499,7 +3522,7 @@ function openKitchen() {
 }
 /* ---------- 상점의 방어 탭 ---------- */
 function defShopHtml(row, cur, won, nx) {
-  let h = '<p class="sub">🧟 좀비는 밤에만 와요. 낮에 번 돈으로 무기와 방어 시설을 갖추세요. 방어 시설은 🧰 도구에서 골라 주인공 앞 칸에 놓고, 놓인 것 앞에서 다시 누르면 거둬요. 좀비는 물을 건너지 못하고(삽으로 판 도랑은 몸으로 메워요) 불을 무서워해요.</p>';
+  let h = '<p class="sub">🧟 좀비는 밤에만 와요. 낮에 번 돈으로 무기와 방어 시설을 갖추세요. 방어 시설은 🧰 도구에서 골라 주인공 앞 칸에 놓고, 놓인 것 앞에서 다시 누르면 거둬요. 좀비는 물을 건너지 못하고 불을 무서워해요. 🕳️ 삽으로 땅을 두 번 넘게 파 두면 좀비가 빠져서 몇 초 뒤에 죽고, 다섯 번 파서 지하수가 솟으면 그 칸은 건너지 못해요.</p>';
   h += '<p class="sub dexh">⚔️ 무기 · 갑옷</p>' + cur(MELEE[meleeLv].e + ' ' + MELEE[meleeLv].n, '위력 ' + MELEE[meleeLv].dmg + ' · ' + MELEE[meleeLv].cd + '초마다 · 앞쪽의 좀비를 한꺼번에 때려요');
   { const N = MELEE[meleeLv + 1]; if (N) { if (level >= N.lv) h += row(N.e, N.n, '위력 ' + N.dmg + ' · ' + N.cd + '초마다 · 닿는 거리 ' + N.reach, won(N.price), 'melee:x', money >= N.price); else nx.push([N.lv, N.e + ' ' + N.n]); } }
   h += cur('🦺 ' + ARMOR[armorLv].n, armorLv ? '받는 피해 -' + Math.round(ARMOR[armorLv].cut * 100) + '%' : '아무것도 막아 주지 않아요');
@@ -3511,7 +3534,7 @@ function defShopHtml(row, cur, won, nx) {
   h += '<p class="sub dexh">🧱 방어 시설 (놓은 것 ' + Object.keys(defs).length + ' / ' + DEF_MAX + ')</p>';
   for (const k in ZDEF) { const Z = ZDEF[k]; if (level < Z.lv) { nx.push([Z.lv, Z.e + ' ' + Z.n]); continue; } h += row(Z.e, Z.n + (Z.pack > 1 ? ' ' + Z.pack + '개' : '') + ' (가진 것 ' + defInv[k] + ')', Z.d + (k[0] === 'w' ? ' · 버티는 힘 ' + Z.hp : ''), won(Z.price), 'zdef:' + k, money >= Z.price); }
   h += row('🪵', '장작 2개로 나무 방어벽 1개 만들기', '🪓 도끼로 숲의 나무를 베면 장작이 나와요 · 가진 장작 ' + logsInv + '개', '만들기', 'zlog:x', logsInv >= 2);
-  h += '<p class="sub">🔥 모닥불(장작을 놓고 횃불로 불 붙이기)과 삽으로 판 물길, 전기 울타리, 총(시설·장비 탭)도 좀비를 막아요.</p>';
+  h += '<p class="sub">🔥 모닥불(장작을 놓고 횃불로 불 붙이기)과 삽으로 판 구덩이 · 물길, 전기 울타리, 총(시설·장비 탭)도 좀비를 막아요. 삽은 시설·장비 탭의 땅·자연에서 사요.</p>';
   return h;
 }
 function defShopBuy(op, arg) {   // 샀으면 true
@@ -3536,13 +3559,16 @@ function gameOver(title, why) {
   $('fresh').onclick = () => { initAudio(); newGame(); begin(); };
 }
 /* ---------- 3D: 좀비 · 가족 · 방어 시설 · 집 ---------- */
+const Z_FLASH = new THREE.Color(3.2, 3.0, 2.8);
 const ZPA_F = ['zpa_f_a', 'zpa_f_b', 'zpa_f_c', 'zpa_f_d', 'zpa_f_e'], ZPA_M = ['zpa_m_a', 'zpa_m_b', 'zpa_m_c', 'zpa_m_d', 'zpa_m_e'];
-const Z_LOOK = { breaker: [2, 1.15, 1], brute: [1.1, 1.5, 1], boss: [1.7, .9, 1.9], jumper: [.75, .95, 1.3], runner: null, walker: [1.5, 1.55, 1.45] };   // 종류마다 다른 빛깔(어두운 밤에도 보이게 밝힌다)
+const Z_LOOK = { breaker: [2, 1.15, 1], brute: [1.1, 1.5, 1], boss: [1.7, .9, 1.9], jumper: [.75, .95, 1.3], runner: [1.15, 1.2, 1.1], bloater: [1.2, 1.25, 1.05], walker: [1.5, 1.55, 1.45] };   // 종류마다 다른 빛깔(어두운 밤에도 보이게 밝힌다)
 function makeZombieModel(q) {
   const h = 112 * q.D.sz, tint = Z_LOOK[q.kind]; let m = null;
-  if (q.kind === 'runner' || q.kind === 'jumper') m = rigClone('zombie', h, tint);
+  if (q.kind === 'bloater') { const pm = prop('zfat', h); if (pm) { const g = new THREE.Group(), hold = new THREE.Group(); pm.material = packMat().clone(); if (tint) pm.material.color.setRGB(tint[0], tint[1], tint[2]); pm.rotation.y = -PI / 2; hold.add(pm); g.add(hold); m = { g, rig: null, hold }; } }   // 뼈대 없는 모형: 통째로 뒤뚱거린다
+  if (m) { } else if (q.kind === 'runner' || q.kind === 'jumper') m = rigClone('zombie', h, tint);
   else { const male = q.kind === 'brute' || q.kind === 'boss' || q.kind === 'breaker' ? true : q.look % 2 === 0, l = male ? ZPA_M : ZPA_F, id = l[Math.floor(q.look / 2) % 5], an = male ? (q.look % 4 < 2 ? 'zpa_m_a' : 'zpa_m_d') : (q.look % 4 < 2 ? 'zpa_f_a' : 'zpa_f_c'); m = rigClone(id, h, tint, an) || rigClone('zombie', h, tint); }
   if (!m) { const g = new THREE.Group(), s = q.D.sz, c = '#8fae7a'; B('#4a5a6a', 16 * s, 34 * s, 22 * s, 0, 17 * s, 0, g); B('#6b4a3a', 18 * s, 34 * s, 26 * s, 0, 52 * s, 0, g); B(c, 20 * s, 20 * s, 20 * s, 0, 82 * s, 0, g); B(c, 30 * s, 7 * s, 7 * s, 16 * s, 62 * s, 12 * s, g); B(c, 30 * s, 7 * s, 7 * s, 16 * s, 62 * s, -12 * s, g); g.traverse(o => { if (o.isMesh) o.castShadow = true; }); m = { g, rig: null }; }
+  if (m.rig || m.hold) m.g.traverse(o => { if (o.isMesh && !m.mat) { m.mat = o.material; m.base = o.material.color.clone(); } });   // 맞으면 번쩍이게 할 재질
   m.g.rotation.y = faceTo(DOOR.x - q.x, DOOR.y - q.y); scene.add(m.g); m.lx = q.x; m.ly = q.y; return m;
 }
 function syncZombie(q, dt) {
@@ -3550,10 +3576,14 @@ function syncZombie(q, dt) {
   const jh = q.jumpT > 0 ? Math.sin((1 - q.jumpT / .6) * PI) * 78 : 0; g.position.set(q.x, jh, q.y);
   const face = q.aggro && !q.jumpT ? faceTo(pl.x - q.x, pl.y - q.y) : q.atDoor ? faceTo(DOOR.x - q.x, DOOR.y - 40 - q.y) : Math.hypot(mvx, mvy) > .08 ? faceTo(mvx, mvy) : null; if (face != null) turn(g, face, Math.min(1, dt * 8));
   const atk = q.atkT > 0 || q.breakT > 0, t = gt * 11 + q.seed;
-  if (q.dead) { const k = clamp(1 - q.dead / (q.sun ? 1.6 : q.sunk ? .8 : 1.4), 0, 1); if (q.sun) { g.scale.setScalar(Math.max(.05, 1 - k)); if (Math.random() < dt * 8) burst(q.x, q.y, 'smoke', 1); } else if (q.sunk) g.position.y = -80 * k; else { g.rotation.z = Math.min(1, k * 2.4) * PI / 2; g.position.y = -6 * k; } if (md.rig) md.rig.mixer.update(0); return; }
-  g.rotation.z = atk ? -.16 - Math.abs(Math.sin(t)) * .22 : q.stun > 0 ? .2 : 0; g.rotation.x = q.hitT > 0 ? Math.sin(gt * 60) * .12 : 0;
-  if (md.rig) { const x = md.rig, crawl = x.acts.Crawl && q.hp <= q.max * .3, name = q.jumpT > 0 ? 'Run' : atk && x.acts.Bite ? 'Bite' : !q.moving && x.acts.Idle ? 'Idle' : crawl ? 'Crawl' : q.speed > 80 && x.acts.Run ? 'Run' : 'Walk';
-    rigPlay(md, name, dt * (name === 'Walk' ? (q.moving ? clamp(q.speed / 46, .7, 2) : atk ? 1.8 : .25) : name === 'Bite' ? 2.2 : 1)); }
+  const hk = q.hitT > 0 ? clamp(q.hitT / .24, 0, 1) : 0; if (md.mat) md.mat.color.copy(md.base).lerp(Z_FLASH, hk * hk);
+  if (q.dead) { const k = clamp(1 - q.dead / (q.sun ? 1.6 : 1.4), 0, 1); if (q.sun) { g.scale.setScalar(Math.max(.05, 1 - k)); if (Math.random() < dt * 8) burst(q.x, q.y, 'smoke', 1); } else if (q.kind === 'bloater') { g.scale.setScalar(k < .12 ? 1 + k * 4 : Math.max(.01, 1.5 - k * 3)); } else { g.scale.setScalar(1); g.rotation.z = Math.min(1, k * 2.6) * PI / 2 * (1 + Math.sin(Math.min(1, k * 2.6) * PI) * .12); g.position.y = (q.pit ? -(8 + 9 * q.pit.d) : 0) + Math.sin(Math.min(1, k * 3) * PI) * 14 - 6 * k; } if (md.rig) md.rig.mixer.update(0); return; }
+  g.scale.set(1 + hk * .16, 1 - hk * .14, 1 + hk * .16);   // 맞는 순간 납작하게 눌렸다 돌아온다
+  g.rotation.z = (atk ? -.16 - Math.abs(Math.sin(t)) * .22 : q.stun > 0 ? .2 : 0) + hk * .55; g.rotation.x = q.hitT > 0 ? Math.sin(gt * 70) * .16 * hk : 0;
+  if (q.pit) { g.position.y = -(8 + 9 * q.pit.d); g.rotation.x = Math.sin(gt * 13 + q.seed) * .22; g.rotation.z = Math.sin(gt * 9 + q.seed) * .18 + hk * .4; }   // 구덩이 속에서 허우적댄다
+  if (md.hold) { const mv = q.moving ? 1 : .2, ph = gt * 5.5 + q.seed; md.hold.rotation.x = Math.sin(ph) * .15 * mv; md.hold.position.y = Math.abs(Math.sin(ph)) * 5 * mv; md.hold.rotation.y = Math.sin(ph) * .12 * mv; }
+  if (md.rig) { const x = md.rig, crawl = x.acts.Crawl && q.hp <= q.max * .3, name = q.jumpT > 0 ? 'Run' : q.pit ? (x.acts.Crawl ? 'Crawl' : 'Walk') : atk && x.acts.Bite ? 'Bite' : !q.moving && x.acts.Idle ? 'Idle' : crawl ? 'Crawl' : q.speed > 80 && x.acts.Run ? 'Run' : 'Walk';
+    rigPlay(md, name, hk > .5 ? 0 : dt * (q.pit ? 2.4 : name === 'Walk' ? (q.moving ? clamp(q.speed / 46, .7, 2) : atk ? 1.8 : .25) : name === 'Bite' ? 2.2 : 1)); }   // 맞는 순간에는 동작도 잠깐 멎는다
 }
 function syncFamily(dt) {   // 가족: 낮에는 집 앞마당을 거닐고, 밤에는 집 안에 있다
   if (!scene) return; const F = world3.fam || (world3.fam = FAM.map((f, i) => { const m = rigClone(f.m, f.h, null, HUMAN); if (m) scene.add(m.g); return { m, x: BARN.x + 60 + i * 34, y: BARN.y + 150, tx: 0, ty: 0, wait: R(0, 3), a: 0 }; }));
@@ -3583,7 +3613,8 @@ function syncZ(dt) { for (const q of preds) syncZombie(q, dt); syncFamily(dt); s
 function drawZ(c) {
   for (const f of towerFx) { const [x0, y0] = proj(f.x0, 130, f.y0), [x1, y1] = proj(f.x1, 50, f.y1); c.strokeStyle = 'rgba(255,255,255,.9)'; c.lineWidth = 2.5; c.beginPath(); c.moveTo(x0, y0); c.lineTo(x1, y1); c.stroke(); }
   for (const q of preds) { if (q.dead) continue; const [x, y, z] = proj(q.x, 118 * q.D.sz + 16, q.y); if (z > 1 || x < 20 || x > VW - 20 || y < HUDH + 6 || y > VH - 10) continue;   // 좀비의 체력 막대(다쳤거나 센 좀비만)
-    if (q.hp < q.max || q.D.sz > 1.3) { const w = clamp(22 + q.max * 2.2, 30, 110), k = clamp(q.hp / q.max, 0, 1); rr(c, x - w / 2 - 2, y - 5, w + 4, 9, 4.5, 'rgba(30,20,16,.85)'); rr(c, x - w / 2, y - 3, w * k, 5, 2.5, k > .5 ? '#9be04a' : k > .25 ? '#ffb81f' : '#e2493f'); }
+    if (q.hp < q.max || q.D.sz > 1.3 || Math.hypot(q.x - pl.x, q.y - pl.y) < 300) { const w = clamp(22 + q.max * 2.2, 30, 110), k = clamp(q.hp / q.max, 0, 1), kl = clamp((q.hpLag == null ? q.hp : q.hpLag) / q.max, 0, 1), sh = q.hitT > 0 ? Math.sin(gt * 80) * 2 : 0; rr(c, x - w / 2 - 2 + sh, y - 6, w + 4, 11, 5.5, 'rgba(30,20,16,.88)'); if (kl > k) rr(c, x - w / 2 + sh, y - 4, w * kl, 7, 3.5, '#ffffff'); if (k > 0) rr(c, x - w / 2 + sh, y - 4, w * k, 7, 3.5, k > .5 ? '#9be04a' : k > .25 ? '#ffb81f' : '#e2493f'); }
+    if (q.pit) { const T = pitTime(q.pit); rr(c, x - 34, y - 26, 68, 12, 6, 'rgba(60,40,20,.9)'); rr(c, x - 32, y - 24, 64 * clamp(1 - q.pitT / T, 0, 1), 8, 4, '#d9a25f'); txt(c, '🕳️ ' + Math.max(0, T - q.pitT).toFixed(1) + '초', x, y - 38, 13, '#ffe9b8', 'center', '#2a1c14'); }
     if (q.kind !== 'walker' && Math.hypot(q.x - pl.x, q.y - pl.y) < 460) txt(c, q.D.e + ' ' + q.D.n, x, y - 15, 12, q.kind === 'boss' ? '#ff8ad8' : '#ffe9b8', 'center', '#2a1c14');
     if (q.grabT > 0) { rr(c, x - 44, y - 40, 88, 14, 7, 'rgba(120,20,20,.92)'); rr(c, x - 42, y - 38, 84 * clamp(q.grabT / 4, 0, 1), 10, 5, '#ff5a4a'); txt(c, '❗ 집에 들어가요!', x, y - 52, 14, '#ff5a4a', 'center', '#fff'); } }
   for (const k in defs) { const d = defs[k], Z = ZDEF[d.k]; if (d.hp >= Z.hp || d.k === 'spike') continue; const mx = d.cx * CELL + CELL / 2, my = d.cy * CELL + CELL / 2; if (Math.hypot(mx - pl.x, my - pl.y) > 420) continue; const [x, y, z] = proj(mx, (Z.h || 100) + 22, my); if (z > 1) continue; rr(c, x - 22, y - 4, 44, 8, 4, 'rgba(30,20,16,.85)'); rr(c, x - 20, y - 2, 40 * clamp(d.hp / Z.hp, 0, 1), 4, 2, '#8fd0ff'); }
@@ -3693,6 +3724,7 @@ document.addEventListener('visibilitychange', () => { last = performance.now(); 
 /* ---------- 업데이트 ---------- */
 const TIPS = ['① 건초 더미에서 건초를 들거나 들판의 풀을 베어(행동 버튼) 울타리 안 여물통에 놓으세요', '② 여물통 옆에서 [먹이 놓기]! 배고픈 가축이 와서 먹어요', '③ 창고에서 물호스를 들고 [물뿌리기]를 누른 채 더러운 가축을 씻기고, 여물통 옆 물통도 채우세요', ''];
 function update(dt) {
+  if (zStop > 0) { zStop -= dt; dt *= .1; }   // 타격 순간 아주 잠깐 느려진다
   gt += dt; if (flashT > 0) flashT -= dt; if (toast.t > 0) toast.t -= dt; else if (toastQ.length) { const q = toastQ.shift(); toast.text = q[0]; toast.t = Math.min(q[1], 3.5); } if (shake > 0) shake -= dt; if (shotFx) { shotFx.t -= dt; if (shotFx.t <= 0) shotFx = null; }
   for (const s of says) { s.life -= dt; s.h += 16 * dt; } says = says.filter(s => s.life > 0);
   for (const q of parts) { q.life -= dt; q.x += q.vx * dt; q.h = Math.max(0, q.h - q.vy * dt); if (q.kind === 'dust') q.vy += 160 * dt; } parts = parts.filter(q => q.life > 0);
@@ -3950,7 +3982,7 @@ function openSettings() {
 }
 function openCredits(back) {
   showOv('<h2>📜 만든 사람들</h2><div class="cred"><p><b>ZombieFarm</b> · 3D 엔진 three.js (MIT)</p><p><b>모형 (CC0 · 퍼블릭 도메인)</b><br>Quaternius (quaternius.com) — 가축 · 공룡 · 사람 · 좀비 · 나무와 바위 · 건물 · 배 · 물고기 · 음식 · 도구<br>Kenney (kenney.nl) 외 — @netforge/asset-library-files 묶음에 실린 CC0 모형(트랙터 · 사슴 · 여우 · 늑대)</p>' +
-    '<p><b>모형 (CC BY 4.0 · sketchfab.com)</b><br>기린 — "Giraffe Low Poly" by millermeln<br>염소 — "Low-poly Goat" by Zafflex<br>하마 — "Low poly angry looking hippo" by Tiberiu Uncu<br>양 — "animated low poly sheep game ready model" by creosine<br>라마 — "Low Poly Llama 3d Model Free" by iRahulRajput<br>게임에 맞게 색을 굽고 삼각형 수를 줄여 썼어요. 라이선스: creativecommons.org/licenses/by/4.0</p><p><b>모형 (Sketchfab Standard License)</b><br>좀비 열 명 — "Polyart Zombies with Animations Free Pack" by Denys Almaral (sketchfab.com/denysalmaral)</p></div><button class="btn" id="go">닫기</button>');
+    '<p><b>모형 (CC BY 4.0 · sketchfab.com)</b><br>기린 — "Giraffe Low Poly" by millermeln<br>염소 — "Low-poly Goat" by Zafflex<br>하마 — "Low poly angry looking hippo" by Tiberiu Uncu<br>양 — "animated low poly sheep game ready model" by creosine<br>라마 — "Low Poly Llama 3d Model Free" by iRahulRajput<br>게임에 맞게 색을 굽고 삼각형 수를 줄여 썼어요. 라이선스: creativecommons.org/licenses/by/4.0</p><p><b>모형 (Sketchfab Standard License)</b><br>좀비 열 명 — "Polyart Zombies with Animations Free Pack" by Denys Almaral (sketchfab.com/denysalmaral)<br>뚱보 좀비 — "zombie" by ol234 (sketchfab.com/ol234)</p></div><button class="btn" id="go">닫기</button>');
   $('go').onclick = () => back();
 }
 function tidyMenu(C) {   // 메뉴 정돈: 닫기 버튼을 위에 고정하고, 긴 설명 글은 [도움말] 안으로, 도감의 긴 묶음은 접어 둔다

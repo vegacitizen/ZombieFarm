@@ -46,6 +46,7 @@ FBX → GLB는 three.js(0.160)의 FBXLoader로 읽어 GLTFExporter로 내보냈�
 
 | 묶음 안의 이름 | 원본 |
 | --- | --- |
+| `zfat` | "zombie" (https://sketchfab.com/3d-models/zombie-91c0ae13c3554475a67eec09847d1a67) by ol234 (https://sketchfab.com/ol234). 뼈대가 없는 모형. `node prebake.mjs <받은 폴더>/scene.gltf src/polyart/FatZombie.glb` |
 | `zpa_f_a` ~ `zpa_f_e`, `zpa_m_a` ~ `zpa_m_e` | "Polyart Zombies with Animations Free Pack" (https://sketchfab.com/3d-models/polyart-zombies-with-animations-free-pack-d9bcfdd88f5348549bc947226af7c314) by Denys Almaral (https://sketchfab.com/denysalmaral) |
 
 이 라이선스는 게임 같은 결과물에 넣어 쓰는 것은 허용하지만 원본 파일을 다시 나눠 주는 것은 허용하지 않는다. 그래서 `src/polyart/`는 `.gitignore`에 넣었다.

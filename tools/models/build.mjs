@@ -61,6 +61,7 @@ const MODELS = {   // 게임에서 쓰는 이름: [원본, 남길 동작, 옵션
   koi: ['src/Koi.glb', null, { simplify: .4, pal: { Koi_Main: '#f0602a', Koi_Fins: '#f8d8a0', Koi_Light: '#ffffff', Koi_Dark: '#3a3a3a', Eyes: '#101010' } }], dock_long: ['src/Dock_Long.glb', null, { simplify: .5, pal: { Wood: '#a9744f', LightWood: '#c79a63', String: '#d9c08a', DarkWood: '#7a4f2c' } }], dock_wide: ['src/Dock_Wide.glb', null, { simplify: .5, pal: { Wood: '#a9744f', LightWood: '#c79a63', String: '#d9c08a', DarkWood: '#7a4f2c' } }],
   // 좀비: Quaternius 좀비(CC0)는 동작이 다섯 가지. Polyart 좀비 열 명(split_zombies.mjs로 나눈 것)은 걷는 동작뿐이고 뼈대가 같아 네 명의 동작을 나머지가 빌려 쓴다
   zombie: ['src/Zombie.glb', ['Run', 'Bite', 'Crawl', 'Walk', 'Idle'], { simplify: .5 }],
+  zfat: ['src/polyart/FatZombie.glb', null, { simplify: .4 }],   // 뼈대 없는 뚱보 좀비(ol234, Sketchfab Standard). 게임에서 뒤뚱거리게 움직인다
   zpa_f_a: ZPA('f_a', 1), zpa_f_b: ZPA('f_b'), zpa_f_c: ZPA('f_c', 1), zpa_f_d: ZPA('f_d'), zpa_f_e: ZPA('f_e'), zpa_m_a: ZPA('m_a', 1), zpa_m_b: ZPA('m_b'), zpa_m_c: ZPA('m_c'), zpa_m_d: ZPA('m_d', 1), zpa_m_e: ZPA('m_e'),
   boat_small: ['src/Boat_Small.glb', null, { pal: { DarkWood: '#7a4f2c', Wood: '#a9744f' } }], boat1: ['src/Ship_Boat.glb', null, { pal: { DarkWood: '#7a4f2c', Wood: '#a9744f' } }], boat2: ['src/Ship_Lifeboat.glb'], boat3: ['src/Ship_BoatWSail.glb', null, { pal: { DarkWood: '#7a4f2c', LightWood: '#c79a63', Sail: '#f4ecd8', Steel: '#8a8f98' } }], boat4: ['src/Ship_CruiseShip.glb']
 };
@@ -107,5 +108,5 @@ for (const [id, [src, keep, opt = {}]] of Object.entries(MODELS)) {
   const glb = await io.writeBinary(doc); out[id] = Buffer.from(glb).toString('base64'); total += glb.byteLength;
   console.log(id.padEnd(16), String(glb.byteLength).padStart(8), 'bytes', String(Math.round(tris)).padStart(6), 'tris', root.listAnimations().map(a => a.getName()).join(' '));
 }
-writeFileSync(OUT, '/* 모형 묶음. CC0 1.0 — Quaternius (quaternius.com): 자연물 · 가축과 야생 동물 · 공룡 · 사람 · 물고기와 선착장 · 배 · 좀비(zombie) / Kenney (kenney.nl): 트랙터(Car Kit).\n   Sketchfab Standard — Denys Almaral: Polyart Zombies with Animations Free Pack(zpa_*).\n   tools/models/build.mjs로 만든다. 직접 고치지 않는다. */\nwindow.PACK_GLB = ' + JSON.stringify(out) + ';\n');
+writeFileSync(OUT, '/* 모형 묶음. CC0 1.0 — Quaternius (quaternius.com): 자연물 · 가축과 야생 동물 · 공룡 · 사람 · 물고기와 선착장 · 배 · 좀비(zombie) / Kenney (kenney.nl): 트랙터(Car Kit).\n   Sketchfab Standard — Denys Almaral: Polyart Zombies with Animations Free Pack(zpa_*) / ol234: zombie(zfat).\n   tools/models/build.mjs로 만든다. 직접 고치지 않는다. */\nwindow.PACK_GLB = ' + JSON.stringify(out) + ';\n');
 console.log('total', total, 'bytes ->', OUT);
