@@ -1,6 +1,6 @@
 name: Release
 
-# v1.2.3 같은 태그를 푸시하면 그 버전으로 APK를 빌드해서 GitHub 릴리즈에 올린다.
+# v1.2.3 같은 태그를 푸시하면 그 버전으로 APK를 빌드해서 GitHub 릴리즈에 ZombieFarm.apk로 올린다.
 # Actions 화면에서 버전을 직접 입력해 실행할 수도 있다.
 on:
   push:
