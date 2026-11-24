@@ -1,0 +1,44 @@
+name: Release
+
+# v1.2.3 같은 태그를 푸시하면 그 버전으로 APK를 빌드해서 GitHub 릴리즈에 올린다.
+# Actions 화면에서 버전을 직접 입력해 실행할 수도 있다.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '버전 (예: 1.0.0)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Resolve version
+        id: v
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          if [ -n "$INPUT_VERSION" ]; then V="${INPUT_VERSION#v}"; else V="${GITHUB_REF_NAME#v}"; fi
+          case "$V" in ''|*[!0-9.]*) echo "잘못된 버전: $V"; exit 1;; esac
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+      - name: Build APK
+        run: ./gradlew --no-daemon assembleRelease -PappVersion="${{ steps.v.outputs.version }}"
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          V: ${{ steps.v.outputs.version }}
+        run: |
+          APK="app/build/outputs/apk/release/ZombieFarm.apk"
+          NOTES="release-notes/v$V.md"
+          if [ -f "$NOTES" ]; then set -- --notes-file "$NOTES"; else set -- --generate-notes; fi
+          gh release create "v$V" "$APK" --title "ZombieFarm v$V" --target "$GITHUB_SHA" "$@"

@@ -1,0 +1,18 @@
+{
+  "name": "scrubpaws-models",
+  "private": true,
+  "type": "module",
+  "description": "CC0 모형을 게임용으로 줄여 app/src/main/assets/pack_models.js로 묶는다",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "devDependencies": {
+    "@gltf-transform/core": "4.5.1",
+    "@gltf-transform/extensions": "4.5.1",
+    "@gltf-transform/functions": "4.5.1",
+    "@netforge/asset-library-files": "0.2.0",
+    "jpeg-js": "^0.4.4",
+    "meshoptimizer": "^0.22.0",
+    "pngjs": "^7.0.0"
+  }
+}

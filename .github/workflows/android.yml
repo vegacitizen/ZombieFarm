@@ -1,0 +1,25 @@
+name: Android build
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Build APKs
+        run: ./gradlew --no-daemon assembleDebug assembleRelease
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ZombieFarm-release-apk
+          path: app/build/outputs/apk/release/ZombieFarm.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ZombieFarm-debug-apk
+          path: app/build/outputs/apk/debug/ZombieFarm-debug.apk
