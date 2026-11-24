@@ -11,3 +11,6 @@ out/
 
 # 모형 변환 도구
 tools/models/node_modules/
+
+# 다시 나눠 줄 수 없는 라이선스의 모형 원본(tools/models/src/README.md 참고)
+tools/models/src/polyart/

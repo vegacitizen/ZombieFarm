@@ -9,7 +9,7 @@ import { MeshoptDecoder, MeshoptSimplifier } from 'meshoptimizer';
 import { PNG } from 'pngjs';
 import { createRequire } from 'node:module';
 import { dirname, join as pjoin } from 'node:path';
-import { writeFileSync } from 'node:fs';
+import { writeFileSync, existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
@@ -26,6 +26,7 @@ const FARM = { DarkRed: '#8a2f27', LightRed: '#b5463a', White: '#fff3e0', RoofBl
 const TOWN = { Plaster: '#eadfc0', Beige: '#eadfc0', Wood: '#8a5a34', Wood_Light: '#a9744f', Wood_Side: '#c79a63', DarkWood: '#6b4a2a', Stone: '#7b8088', Stone_Light: '#a7acb3', Stone_Dark: '#8f949c', Windows: '#3a4a5a', RoofTiles: '#3f7f8f', RoofTiles_Red: '#b5463a', Green: '#5fae4a', Metal: '#6b6f78', Red: '#c2523f', Bag: '#d9b98a', Hay: '#e9cf8c' };
 const farm = (f, k) => ['src/Farm_' + f + '.glb', null, { pal: FARM, simplify: k || .5 }], town = (f, k) => ['src/Village_' + f + '.glb', null, { pal: TOWN, simplify: k || .5 }], rts = (f, pal) => ['src/RTS_' + f + '.glb', null, { pal: pal || {}, simplify: .6 }];
 const GUNC = { LightMetal: '#8a8f98', Metal: '#5a6068', DarkMetal: '#3a3a40', Black: '#2a2a2e', Wood: '#8a5a34', DarkWood: '#6b4a2a', LightWood: '#c79a63', Barrels: '#4a5058', Barrel: '#4a5058', Trigger: '#2a2a2e', Green: '#4a6a3a', Magazine: '#3a3a40', BulletYellow: '#e8c04a', BulletOrange: '#d98a3a' };
+const ZPA = (k, anim) => ['src/polyart/Zombie_' + k + '.glb', anim ? ['Walk'] : [], { simplify: .7 }];
 const MODELS = {   // 게임에서 쓰는 이름: [원본, 남길 동작, 옵션]. 'src/'로 시작하면 이 폴더의 파일, 아니면 npm 꾸러미의 모형
   // 옵션 — pal: 재질 이름별 색 바꾸기, lift: 어둡게 저장된 색 밝히기(클수록 더 밝게), simplify: 삼각형을 이 비율로 줄이기(error: 허용 오차, coarse: 색을 굵게 묶어 더 잘 줄게)
   tree_oak: tree('CommonTree_1', .28), tree_fat: tree('CommonTree_3'), tree_autumn: tree('CommonTree_Autumn_1', .28), tree_pine: tree('PineTree_1'), tree_pine_tall: tree('PineTree_2'), tree_dark: tree('PineTree_3', .3),
@@ -58,6 +59,9 @@ const MODELS = {   // 게임에서 쓰는 이름: [원본, 남길 동작, 옵션
   person_a: ['src/Casual_Male.glb', WHO, HALF], person_b: ['src/Casual_Female.glb', [], HALF], person_c: ['src/Casual2_Male.glb', [], HALF], person_d: ['src/Casual2_Female.glb', [], HALF], person_e: ['src/OldClassy_Female.glb', [], HALF],
   worker_a: ['src/Worker_Male.glb', [], HALF], worker_b: ['src/Worker_Female.glb', [], HALF], cowboy_a: ['src/Cowboy_Male.glb', [], HALF], cowboy_b: ['src/Cowboy_Female.glb', [], HALF],
   koi: ['src/Koi.glb', null, { simplify: .4, pal: { Koi_Main: '#f0602a', Koi_Fins: '#f8d8a0', Koi_Light: '#ffffff', Koi_Dark: '#3a3a3a', Eyes: '#101010' } }], dock_long: ['src/Dock_Long.glb', null, { simplify: .5, pal: { Wood: '#a9744f', LightWood: '#c79a63', String: '#d9c08a', DarkWood: '#7a4f2c' } }], dock_wide: ['src/Dock_Wide.glb', null, { simplify: .5, pal: { Wood: '#a9744f', LightWood: '#c79a63', String: '#d9c08a', DarkWood: '#7a4f2c' } }],
+  // 좀비: Quaternius 좀비(CC0)는 동작이 다섯 가지. Polyart 좀비 열 명(split_zombies.mjs로 나눈 것)은 걷는 동작뿐이고 뼈대가 같아 네 명의 동작을 나머지가 빌려 쓴다
+  zombie: ['src/Zombie.glb', ['Run', 'Bite', 'Crawl', 'Walk', 'Idle'], { simplify: .5 }],
+  zpa_f_a: ZPA('f_a', 1), zpa_f_b: ZPA('f_b'), zpa_f_c: ZPA('f_c', 1), zpa_f_d: ZPA('f_d'), zpa_f_e: ZPA('f_e'), zpa_m_a: ZPA('m_a', 1), zpa_m_b: ZPA('m_b'), zpa_m_c: ZPA('m_c'), zpa_m_d: ZPA('m_d', 1), zpa_m_e: ZPA('m_e'),
   boat_small: ['src/Boat_Small.glb', null, { pal: { DarkWood: '#7a4f2c', Wood: '#a9744f' } }], boat1: ['src/Ship_Boat.glb', null, { pal: { DarkWood: '#7a4f2c', Wood: '#a9744f' } }], boat2: ['src/Ship_Lifeboat.glb'], boat3: ['src/Ship_BoatWSail.glb', null, { pal: { DarkWood: '#7a4f2c', LightWood: '#c79a63', Sail: '#f4ecd8', Steel: '#8a8f98' } }], boat4: ['src/Ship_CruiseShip.glb']
 };
 const lin = v => { v /= 255; return v <= .04045 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); };
@@ -66,7 +70,10 @@ const hex = h => [1, 3, 5].map(i => lin(parseInt(h.slice(i, i + 2), 16)));
 await MeshoptDecoder.ready; await MeshoptSimplifier.ready;
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.decoder': MeshoptDecoder });
 const out = {}; let total = 0;
+// 저장소에 원본을 두지 않는 모형(src/polyart: 다시 나눠 주지 못하는 라이선스)은 원본이 없으면 지금 묶음에 든 것을 그대로 쓴다
+const prev = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8').replace(/^[\s\S]*?window\.PACK_GLB = /, '').replace(/;\s*$/, '')) : {};
 for (const [id, [src, keep, opt = {}]] of Object.entries(MODELS)) {
+  if (src.startsWith('src/') && !existsSync(pjoin(HERE, src))) { if (!prev[id]) throw new Error('원본이 없어요: ' + src); out[id] = prev[id]; console.log(id.padEnd(16), '(원본 없음: 지금 묶음의 것을 그대로 씀)'); continue; }
   const seenS = new Set(), doc = await io.read(src.startsWith('src/') ? pjoin(HERE, src) : pjoin(SRC, src + '.glb')), root = doc.getRoot(), seen = {};
   for (const a of root.listAnimations()) { const n = a.getName(); if (!keep || !keep.includes(n) || seen[n]) { for (const c of a.listChannels()) c.dispose(); for (const q of a.listSamplers()) q.dispose(); a.dispose(); } else seen[n] = 1; }
   for (const a of root.listAnimations()) {   // 동작 줄이기: 크기 변화 트랙은 버리고, 키프레임은 초당 12개쯤만 남긴다
@@ -100,5 +107,5 @@ for (const [id, [src, keep, opt = {}]] of Object.entries(MODELS)) {
   const glb = await io.writeBinary(doc); out[id] = Buffer.from(glb).toString('base64'); total += glb.byteLength;
   console.log(id.padEnd(16), String(glb.byteLength).padStart(8), 'bytes', String(Math.round(tris)).padStart(6), 'tris', root.listAnimations().map(a => a.getName()).join(' '));
 }
-writeFileSync(OUT, '/* CC0 1.0 모형 묶음. Quaternius (quaternius.com): 자연물 · 가축과 야생 동물 · 공룡 · 사람 · 물고기와 선착장 · 배 / Kenney (kenney.nl): 트랙터(Car Kit).\n   tools/models/build.mjs로 만든다. 직접 고치지 않는다. */\nwindow.PACK_GLB = ' + JSON.stringify(out) + ';\n');
+writeFileSync(OUT, '/* 모형 묶음. CC0 1.0 — Quaternius (quaternius.com): 자연물 · 가축과 야생 동물 · 공룡 · 사람 · 물고기와 선착장 · 배 · 좀비(zombie) / Kenney (kenney.nl): 트랙터(Car Kit).\n   Sketchfab Standard — Denys Almaral: Polyart Zombies with Animations Free Pack(zpa_*).\n   tools/models/build.mjs로 만든다. 직접 고치지 않는다. */\nwindow.PACK_GLB = ' + JSON.stringify(out) + ';\n');
 console.log('total', total, 'bytes ->', OUT);
