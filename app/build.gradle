@@ -4,7 +4,7 @@ plugins {
 
 // 버전: 릴리즈 워크플로가 태그(v1.2.3)에서 넘겨 주고, 없으면 아래 기본값을 쓴다.
 // versionCode는 버전에서 계산한다(1.2.3 → 10203). 새 버전을 낼 때 기본값도 함께 올린다.
-def appVersion = (project.findProperty('appVersion') ?: '3.6.2').toString()
+def appVersion = (project.findProperty('appVersion') ?: '3.6.3').toString()
 def vparts = (appVersion.tokenize('.') + ['0', '0', '0']).take(3).collect { (it.replaceAll(/[^0-9]/, '') ?: '0') as int }
 def appVersionCode = vparts[0] * 10000 + vparts[1] * 100 + vparts[2]
 

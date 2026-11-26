@@ -3274,7 +3274,6 @@ function quickTools() {   // 밤: 횃불 · 물호스, 낮: 물호스 · 긁개.
 function pickTool(k, keep) {
   if (!toolList().includes(k) || work) return; if (k.startsWith('seed:')) { pl.tool = 'seed'; pl.seedType = k.slice(5); } else pl.tool = k; initAudio(); SFX.tick();
   if (keep && !quickBase().includes(k)) { quickLast[isNight() ? 'n' : 'd'] = k; try { localStorage.setItem('zombiefarm_quick', JSON.stringify(quickLast)); } catch (e) { } }
-  say(pl, toolIcon(k) + ' ' + toolName(k), '#4a3226', 1);
 }
 function openTools() {
   if (state !== 'play' || work) return; state = 'menu'; const l = toolList(), cur = toolKey();
