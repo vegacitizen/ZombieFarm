@@ -3908,40 +3908,30 @@ function openKitchen() {   // 조리장: 도구 고르기 → 재료 넣기 → 
     if (re) { state = 'play'; openKitchen(); } }; });
 }
 /* ---------- 상점의 방어 탭 ---------- */
-function defShopHtml(row, cur, won, nx) {
-  let h = '<p class="sub">🧟 좀비는 밤에만 와요. 낮에 번 돈으로 무기를 갖추고 🏰 방어 진형을 고르세요. 진형은 모양마다 값이 다르고, 고르면 벽 전체가 한 번에 서요. 좀비는 물을 건너지 못하고 불을 무서워해요. 🕳️ 삽으로 파면 둥근 구덩이가 생겨요: 두 번 넘게 파면 좀비가 빠져 4~10초 동안 갇히고, 다섯 번 파면 지하수가 솟아 건너지 못해요.</p>';
-  h += '<p class="sub dexh">⚔️ 무기 · 갑옷</p>' + cur(MELEE[meleeLv].e + ' ' + MELEE[meleeLv].n, '위력 ' + MELEE[meleeLv].dmg + ' · ' + MELEE[meleeLv].cd + '초마다 · 앞쪽의 좀비를 한꺼번에 때려요');
-  { const N = MELEE[meleeLv + 1]; if (N) { if (level >= N.lv) h += row(N.e, N.n, '위력 ' + N.dmg + ' · ' + N.cd + '초마다 · 닿는 거리 ' + N.reach, won(N.price), 'melee:x', money >= N.price); else nx.push([N.lv, N.e + ' ' + N.n]); } }
-  h += cur('🦺 ' + ARMOR[armorLv].n, armorLv ? '받는 피해 -' + Math.round(ARMOR[armorLv].cut * 100) + '%' : '아무것도 막아 주지 않아요');
-  { const N = ARMOR[armorLv + 1]; if (N) { if (level >= N.lv) h += row('🦺', N.n, '좀비에게 받는 피해 -' + Math.round(N.cut * 100) + '%', won(N.price), 'armor:x', money >= N.price); else nx.push([N.lv, '🦺 ' + N.n]); } }
-  h += row('🥫', '통조림 (가진 것 ' + (foods.ration || 0) + ')', '체력 +' + foodInfo('ration').hp + '. 직접 만든 음식이 훨씬 싸고 좋아요(집 옆 🍳 조리장)', won(foodInfo('ration').price), 'ration:x', money >= foodInfo('ration').price && (foods.ration || 0) < FOOD_MAX);
-  if (level >= MOLO.lv) h += row('🍾', '화염병 ' + MOLO.pack + '개 (가진 것 ' + moloInv + ')', '앞으로 던지면 8초 동안 불이 타요. 좀비가 다가오지 못하고, 닿으면 불이 붙어요', won(MOLO.price), 'molo:x', money >= MOLO.price); else nx.push([MOLO.lv, '🍾 화염병']);
-  h += '<p class="sub dexh">🔫 총 · 🔥 화염 방사기 (총알 ' + ammo + '발)</p>';
-  { const spec = g => '위력 ' + g.dmg + ' · 사거리 ' + g.range + ' · ' + (g.cd < 1 ? '1초에 ' + (1 / g.cd).toFixed(1).replace('.0', '') + '발' : g.cd + '초마다') + (gunUse(g) ? '' : ' · 총알 무제한') + (g.pierce ? ' · 관통' : '') + (g.bonus ? ' · 보상 ×' + g.bonus : ''), C = GUNS[gunLv], N = GUNS[gunLv + 1];
-    if (C) h += cur('🔫 ' + C.n + ' (' + gunLv + '단계)', spec(C) + ' · [쏘기]를 누르고 있으면 이어서 나가요');
-    if (N) { if (level >= LV.gun[gunLv]) h += row('🔫', (C ? '총 강화: ' : '') + N.n, spec(N) + (C ? '' : ' · 멀리서 좀비를 쓰러뜨려요') + (gunLv === 1 ? ' · ⚠️ 이 단계부터는 총알이 있어야 쏴요(총알 ' + AMMO_PACK + '발을 함께 줘요)' : ''), won(N.price), 'gun:x', money >= N.price); else nx.push([LV.gun[gunLv], '🔫 ' + N.n]); }
+function defShopHtml(row, cur, won, nx) {   // 방어 탭: 무기와 집 방어 두 묶음. 단계가 있는 것은 '다음 단계' 한 칸만 보여 준다
+  const step = (ic, cn, cs, N, lv, nn, ns, id) => N && level >= lv ? row(ic, nn, (cn ? '지금: ' + cn + ' → ' : '') + ns, won(N.price), id, money >= N.price) : (N && nx.push([lv, ic + ' ' + nn]), cn ? cur(ic + ' ' + cn, cs + (N ? '' : ' · 가장 좋은 단계예요')) : '');
+  let h = '<p class="sub dexh">⚔️ 무기</p>';
+  { const C = MELEE[meleeLv], N = MELEE[meleeLv + 1]; h += step(N ? N.e : C.e, C.n, '위력 ' + C.dmg + ' · ' + C.cd + '초마다', N, N && N.lv, N && N.n, N && '위력 ' + N.dmg + ' · ' + N.cd + '초마다 · 앞쪽의 좀비를 한꺼번에 때려요', 'melee:x'); }
+  { const C = ARMOR[armorLv], N = ARMOR[armorLv + 1]; h += step('🦺', C.n, '받는 피해 -' + Math.round(C.cut * 100) + '%', N, N && N.lv, N && N.n, N && '좀비에게 받는 피해 -' + Math.round(N.cut * 100) + '%', 'armor:x'); }
+  { const spec = g => '위력 ' + g.dmg + ' · 사거리 ' + g.range + ' · ' + (g.cd < 1 ? '1초에 ' + (1 / g.cd).toFixed(1).replace('.0', '') + '발' : g.cd + '초마다') + (gunUse(g) ? '' : ' · 총알 무제한') + (g.pierce ? ' · 관통' : ''), C = GUNS[gunLv], N = GUNS[gunLv + 1];
+    h += step('🔫', C ? C.n : '', C ? spec(C) : '', N, LV.gun[gunLv], N && N.n, N && spec(N) + ' · [쏘기]를 누르고 있으면 이어서 나가요' + (gunLv === 1 ? ' · ⚠️ 이 단계부터는 총알이 있어야 쏴요(총알 ' + AMMO_PACK + '발을 함께 줘요)' : ''), 'gun:x');
     if (gunLv >= 2) h += row('📦', '총알 ' + AMMO_PACK + '발 (가진 것 ' + ammo + ')', '소총을 강화한 뒤로는 총알이 있어야 쏴요', won(AMMO_PRICE), 'ammo:x', money >= AMMO_PRICE); }
-  { const fs = f => '거리 ' + f.r + ' · 퍼지는 각 ' + Math.round(f.ang * 2 * 57.3) + '° · 세기 ' + f.dps, C = FLAMES[flameLv], N = FLAMES[flameLv + 1];
-    if (C) h += cur('🔥 ' + C.n + ' (' + flameLv + '단계)', fs(C) + ' · 연료 ' + Math.ceil(fuel) + ' / ' + FUEL_MAX + ' · 닿은 것은 무엇이든 바로 불이 붙어요');
-    if (N) { if (level >= N.lv) h += row('🔥', (C ? '화염 방사기 강화: ' : '') + N.n, fs(N) + (C ? '' : ' · 누르고 있으면 불이 부채꼴로 퍼져요. 좀비는 불타 죽고, 풀 · 나무 · 작물에도 불이 붙으니 조심하세요. 연료 ' + FUEL_PACK + ' 포함'), won(N.price), 'flame:x', money >= N.price); else nx.push([N.lv, '🔥 ' + N.n]); }
+  { const fs = f => '거리 ' + f.r + ' · 세기 ' + f.dps, C = FLAMES[flameLv], N = FLAMES[flameLv + 1];
+    h += step('🔥', C ? C.n : '', C ? fs(C) : '', N, N && N.lv, N && N.n, N && fs(N) + ' · 누르고 있으면 불이 부채꼴로 퍼져요. 풀 · 나무에도 불이 붙으니 조심하세요' + (C ? '' : ' · 연료 ' + FUEL_PACK + ' 포함'), 'flame:x');
     if (C) h += row('⛽', '연료 ' + FUEL_PACK + ' (가진 것 ' + Math.ceil(fuel) + ')', '화염 방사기는 1초에 연료 6을 써요', won(FUEL_PRICE), 'fuel:x', money >= FUEL_PRICE && fuel < FUEL_MAX); }
   if (level >= NADE.lv) h += row('🧨', '수류탄 ' + NADE.pack + '개 (가진 것 ' + nadeInv + ')', '앞으로 던지면 잠깐 뒤에 터져요. 둘레 ' + NADE.r + ' 안의 좀비가 ' + NADE.dmg + '씩 다치고 멀리 날아가요. 가까이 있으면 주인공도 다쳐요', won(NADE.price), 'nade:x', money >= NADE.price); else nx.push([NADE.lv, '🧨 수류탄']);
-  h += '<p class="sub dexh">🏰 방어 진형</p><p class="sub">집 둘레의 벽이에요. 모양을 고르면 값을 한 번 내고 전체가 서요. 부서진 칸은 아침마다 다시 서요.</p>';
+  h += '<p class="sub dexh">🏰 집 방어</p>';
   { const M0 = HF_MAT[houseFence.mat], MN = HF_MAT[houseFence.mat + 1];
-    h += cur('🧱 소재: ' + M0.n + ' (칸마다 버티는 힘 ' + ZDEF[M0.k].hp + ')', houseFence.mat ? '뛰어넘는 좀비가 넘지 못해요' : '부수는 좀비에게 금방 부서지고, 뛰어넘는 좀비는 넘어와요');
-    if (MN) { if (level >= MN.lv) h += row(ZDEF[MN.k].e, '진형의 벽을 ' + MN.n + '(으)로', '모든 칸의 버티는 힘 ' + ZDEF[M0.k].hp + ' → ' + ZDEF[MN.k].hp + ' · 뛰어넘지 못해요 · 어느 진형으로 바꿔도 이 소재로 서요. 미로는 벽이 단단할수록 잘 통해요', won(MN.price), 'hfmat:x', money >= MN.price); else nx.push([MN.lv, ZDEF[MN.k].e + ' 진형의 벽 ' + MN.n]); }
+    h += step(MN ? ZDEF[MN.k].e : ZDEF[M0.k].e, '벽 소재 ' + M0.n, '칸마다 버티는 힘 ' + ZDEF[M0.k].hp, MN, MN && MN.lv, MN && '벽 소재: ' + MN.n, MN && '칸마다 버티는 힘 ' + ZDEF[MN.k].hp + ' · 뛰어넘지 못해요 · 어느 진형에나 적용돼요', 'hfmat:x');
     HF_SHAPE.forEach((S0, i) => { const P = fortPlan(i), info = '벽 ' + P.w.length + '칸' + (P.t.length ? ' · 🗼 방어 타워 ' + P.t.length + '곳 포함' : '') + ' · ' + S0.d, ic = fortThumb(i);
       if (i === houseFence.shape) h += row(ic, S0.n, info, '✔ 사용 중', 'x', false);
       else if (houseFence.own[i]) h += row(ic, S0.n, info + ' · 이미 산 진형이라 값 없이 바꿔요', '바꾸기', 'fort:' + i, true);
       else if (level >= S0.lv) h += row(ic, S0.n, info + ' · 한 번 사면 언제든 값 없이 다시 고를 수 있어요', won(S0.price), 'fort:' + i, money >= S0.price);
       else nx.push([S0.lv, '🏰 ' + S0.n]); });
-    h += row('✏️', '직접 설계', '위에서 내려다본 지도에 선을 그어 벽 · 타워 · 덫을 직접 놓아요. 놓는 칸만큼 그 자리에서 값을 내요(나무 ' + wallUnit('w1').toLocaleString() + ' · 벽돌 ' + wallUnit('w2').toLocaleString() + ' · 철 ' + wallUnit('w3').toLocaleString() + '원, 타워 ' + wallUnit('tower').toLocaleString() + '원). 진형 위에 덧붙여도 돼요. 좀비가 올 길도 미리 보여 줘요', '열기', 'plan:x', true); }
-  h += '<p class="sub dexh">🏠 집</p>' + cur('🚪 ' + DOORS[doorLv].n, '문 ' + Math.ceil(doorHp) + ' / ' + doorMax() + ' · 좀비에게 부서지면 방어 실패예요. 아침마다 저절로 고쳐지고, 밤에는 문 앞에서 장작으로 고쳐요');
-  { const N = DOORS[doorLv + 1]; if (N) { if (level >= N.lv) h += row('🚪', N.n, '문이 버티는 힘 ' + doorMax() + ' → ' + N.hp, won(N.price), 'door:x', money >= N.price); else nx.push([N.lv, '🚪 ' + N.n]); } }
-  h += cur('🪟 가족 무장: ' + FAMGUN[famGun].n, famGun ? '밤에 가족이 창문에서 문 가까이(330) 온 좀비를 쏴요. 위력 ' + FAMGUN[famGun].dmg + ' · 남은 가족이 많을수록 자주 (지금 ' + (3.4 / Math.max(1, famN())).toFixed(1) + '초마다)' : '가족은 아직 싸울 줄 몰라요');
-  { const N = FAMGUN[famGun + 1]; if (N) { if (level >= N.lv) h += row('🪟', '가족에게 ' + N.n + ' 쥐여 주기', '밤에 가족이 창문에서 문 앞의 좀비를 쏴요 · 위력 ' + N.dmg, won(N.price), 'famgun:x', money >= N.price); else nx.push([N.lv, '🪟 가족 ' + N.n]); } }
-  h += hasShovel ? cur('🕳️ 삽', '🧰에서 들고 [삽질하기]. 두 번 넘게 파면 좀비가 빠져 갇히고, 다섯 번 파면 물이 솟아 건너지 못해요') : row('🕳️', '삽', '땅을 파서 구덩이와 물길을 만들어요. 두 번 넘게 판 구덩이에는 좀비가 빠져 한동안 갇히고, 다섯 번 파면 지하수가 솟아 좀비가 건너지 못해요', won(SHOVEL_PRICE), 'shovel:x', money >= SHOVEL_PRICE);
-  h += '<p class="sub">🔥 모닥불(장작을 놓고 횃불로 불 붙이기)과 삽으로 판 구덩이 · 물길, 총과 화염 방사기도 좀비를 막아요. </p>';
+    h += row('✏️', '직접 설계', '위에서 내려다본 지도에 선을 그어 벽 · 타워 · 덫을 직접 놓아요. 놓는 칸만큼 그 자리에서 값을 내요(나무 ' + wallUnit('w1').toLocaleString() + ' · 벽돌 ' + wallUnit('w2').toLocaleString() + ' · 철 ' + wallUnit('w3').toLocaleString() + '원, 타워 ' + wallUnit('tower').toLocaleString() + '원). 좀비가 올 길도 미리 보여 줘요', '열기', 'plan:x', true); }
+  { const C = DOORS[doorLv], N = DOORS[doorLv + 1]; h += step('🚪', C.n, '문 ' + Math.ceil(doorHp) + ' / ' + doorMax() + ' · 부서지면 방어 실패예요', N, N && N.lv, N && N.n, N && '문이 버티는 힘 ' + doorMax() + ' → ' + N.hp + ' · 부서지면 방어 실패예요', 'door:x'); }
+  { const C = FAMGUN[famGun], N = FAMGUN[famGun + 1]; h += step('🪟', famGun ? '가족 ' + C.n : '', famGun ? '밤에 가족이 창문에서 좀비를 쏴요 · 위력 ' + C.dmg : '', N, N && N.lv, N && '가족 무장: ' + N.n, N && '밤에 가족이 창문에서 문 앞의 좀비를 쏴요 · 위력 ' + N.dmg, 'famgun:x'); }
+  if (!hasShovel) h += row('🕳️', '삽', '땅을 둥글게 파요. 두 번 넘게 판 구덩이에는 좀비가 빠져 한동안 갇히고, 다섯 번 파면 지하수가 솟아 좀비가 건너지 못해요', won(SHOVEL_PRICE), 'shovel:x', money >= SHOVEL_PRICE);
   return h;
 }
 function defShopBuy(op, arg) {   // 샀으면 true
